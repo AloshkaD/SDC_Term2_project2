@@ -25,25 +25,25 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 0.2; // fixed this value from 30
+  std_a_ = 3; // fixed this value from 30
 
   // Process noise standard deviation yaw acceleration in rad/s^2
   std_yawdd_ = 0.2; // fixed this value from 30 
 
   // Laser measurement noise standard deviation position1 in m
-  std_laspx_ = 0.15;
+  std_laspx_ = 0.1;
 
   // Laser measurement noise standard deviation position2 in m
-  std_laspy_ = 0.15;
+  std_laspy_ = 0.1;
 
   // Radar measurement noise standard deviation radius in m
   std_radr_ = 0.3;
 
   // Radar measurement noise standard deviation angle in rad
-  std_radphi_ = 0.03;
+  std_radphi_ = 0.0003;
 
   // Radar measurement noise standard deviation radius change in m/s
-  std_radrd_ = 0.3;
+  std_radrd_ = 0.1;
 
   /**
   TODO:
@@ -59,6 +59,9 @@ UKF::UKF() {
   // Sigma point spreading parameter
   lambda_ = 3 - n_aug;
 
+  is_initialized_ = false;
+  previous_timestamp_ = 0;
+ 
 
 
 }
@@ -76,6 +79,26 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   Complete this function! Make sure you switch between lidar and radar
   measurements.
   */
+  if (!is_initialized_)
+
+  ukf_.x_ = VectorXd(4);
+  previous_timestamp_ = meas_package.timestamp_;
+  ukf_.x_ = 1,1,1,1,1;
+  
+  if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
+      /**
+      Convert radar from polar to cartesian coordinates and initialize state.
+      */
+      float theta = meas_package.raw_measurements_[1];
+      float px = measurement_pack.raw_measurements_[0]*cos(theta);
+      float py = measurement_pack.raw_measurements_[0]*sin(theta);
+      if(fabs(px) < 0.00001 or fabs(py) < 0.00001){
+        //cout<< "px or py is 0"<<"\n";
+        //px = 0.00001;
+        //py = 0.00001;
+      return;
+    
+  }
 }
 
 /**
