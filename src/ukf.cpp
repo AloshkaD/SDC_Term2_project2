@@ -293,7 +293,7 @@ return;
 
 
 }
-double UKF::Update(MeasurementPackage meas_package, MatrixXd Zsig, MatrixXd R, VectorXd z) 
+double UKF::Update(MeasurementPackage meas_package, int n_z, MatrixXd Zsig, MatrixXd R, VectorXd z) 
 {
   //create example vector for mean predicted measurement
   VectorXd z_pred = VectorXd(n_z);
@@ -370,6 +370,24 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
   You'll also need to calculate the lidar NIS.
   */
+  MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
+  for (int i = 0; i < 2 * n_aug_ + 1; i++) {
+    double p_x = Xsig_pred_(0,i);
+    double p_y = Xsig_pred_(1,i);
+    Zsig(0,i) = p_x;
+    Zsig(1,i) = p_y;
+  }
+
+  MatrixXd R = MatrixXd(n_z,n_z);
+  R << std_laspx_*std_laspx_, 0,
+       0, std_laspx_*std_laspx_;
+
+  VectorXd z = VectorXd(n_z);
+  z << meas_package.raw_measurements_(0),
+      meas_package.raw_measurements_(1);
+
+  NIS_laser_ = Update(meas_package, n_z, Zsig, R, z);
+
 }
 
 /**
@@ -385,4 +403,37 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
   You'll also need to calculate the radar NIS.
   */
+  //create matrix for sigma points in measurement space
+  int n_z =3;
+  MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug + 1);
+
+  //transform sigma points into measurement space
+  for (int i = 0; i < 2 * n_aug + 1; i++) {  //2n+1 simga points
+
+    // extract values for better readibility
+    double p_x = Xsig_pred(0,i);
+    double p_y = Xsig_pred(1,i);
+    double v  = Xsig_pred(2,i);
+    double yaw = Xsig_pred(3,i);
+
+    double v1 = cos(yaw)*v;
+    double v2 = sin(yaw)*v;
+
+    // measurement model
+    Zsig(0,i) = sqrt(p_x*p_x + p_y*p_y);                        //r
+    Zsig(1,i) = atan2(p_y,p_x);                                 //phi
+    Zsig(2,i) = (p_x*v1 + p_y*v2 ) / sqrt(p_x*p_x + p_y*p_y);   //r_dot
+  }
+
+  //add measurement noise covariance matrix
+  MatrixXd R = MatrixXd(n_z,n_z);
+  R <<    std_radr*std_radr, 0, 0,
+          0, std_radphi*std_radphi, 0,
+          0, 0,std_radrd*std_radrd;
+     VectorXd z = VectorXd(n_z);
+  z << meas_package.raw_measurements_(0),
+       meas_package.raw_measurements_(1),
+       meas_package.raw_measurements_(2);
+
+  NIS_radar_ = Update(meas_package, Zsig, R, z);
 }
