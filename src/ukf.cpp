@@ -64,7 +64,7 @@ UKF::UKF() {
   previous_timestamp_ = 0;
  
   //set measurement dimension, radar can measure r, phi, and r_dot
-  int n_z = 3;
+  //int n_z = 3;
 
 }
 
@@ -297,7 +297,8 @@ double UKF::Update(MeasurementPackage meas_package, int n_z, MatrixXd Zsig, Matr
 {
   //create example vector for mean predicted measurement
   VectorXd z_pred = VectorXd(n_z);
-  z_pred << 0.0, 0.0, 0.0;
+  //z_pred << 0.0, 0.0, 0.0;
+  z_pred.fill(0.0);
   for (int i=0; i < 2*n_aug_+1; i++) {
       z_pred = z_pred + weights_(i) * Zsig.col(i);
   }
@@ -435,5 +436,5 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
        meas_package.raw_measurements_(1),
        meas_package.raw_measurements_(2);
 
-  NIS_radar_ = Update(meas_package, Zsig, R, z);
+  NIS_radar_ = Update(meas_package,n_z, Zsig, R, z);
 }
