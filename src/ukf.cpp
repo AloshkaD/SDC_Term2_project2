@@ -52,6 +52,15 @@ UKF::UKF() {
 
   Hint: one or more values initialized above might be wildly off...
   */
+  // state dimention
+  n_x_ = 5;
+
+  // Augumented state dimention
+
+  n_aug_ = 7;
+
+
+
 }
 
 UKF::~UKF() {}
