@@ -80,11 +80,10 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   Complete this function! Make sure you switch between lidar and radar
   measurements.
   */
-  if (!is_initialized_)
-  float v=0.1 // estimate velocity for now
-  ukf.x_ = VectorXd(4);
-  previous_timestamp_ = meas_package.timestamp_;
-  ukf.x_ = 1,1,1,1,1; //pos1, pos2, vel_abs, yaw_angle, yaw_rate
+  if (!is_initialized_){
+  //float v=0.1 // estimate velocity for now
+  
+  x_ = 0.1, 0.1, 0.1, 0.1, 0.1; //pos1, pos2, vel_abs, yaw_angle, yaw_rate
   /*
     x << 5.7441,
          1.3800,
@@ -92,7 +91,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
          0.5015,
          0.3528;
   */
-
+  previous_timestamp_ = meas_package.timestamp_;
   if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
@@ -109,7 +108,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   }
       float ro_dot = meas_package.raw_measurements_(2);
       float phi = meas_package.raw_measurements_(1);
-      ukf.x_ << px, py,v, ro_dot * cos(phi), ro_dot * sin(phi);
+      x_ << px, py,v, ro_dot * cos(phi), ro_dot * sin(phi),0;
 
       //ekf_.x_ << px, py, 0, 0,0;
 }
@@ -127,10 +126,21 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
         //py_laser = 0.00001;
         return;
       }
-            ukf.x_ << px_laser, py_laser,0, 0, 0;
+        x_ << px_laser, py_laser,0, 0, 0;
       }
     is_initialized_ = true;
     return;
+}
+float dt = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
+
+Prediction(dt);
+if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+UpdateRadar(meas_package);
+}
+else{
+UpdateLidar(meas_package);
+}
+
 }
 
 /**
@@ -147,11 +157,11 @@ void UKF::Prediction(double delta_t) {
   */
   //set example covariance matrix
  // MatrixXd P_ = MatrixXd(n_x, n_x);
-  P_ << 0.0043,   -0.0013,    0.0030,   -0.0022,   -0.0020,
-      -0.0013,    0.0077,    0.0011,    0.0071,    0.0060,
-       0.0030,    0.0011,    0.0054,    0.0007,    0.0008,
-      -0.0022,    0.0071,    0.0007,    0.0098,    0.0100,
-      -0.0020,    0.0060,    0.0008,    0.0100,    0.0123;
+  P_ << 0.1, 0, 0, 0, 0,
+        0, 0.1, 0, 0, 0,
+        0, 0, 0.1, 0, 0,
+        0, 0, 0, 0.1, 0,
+        0, 0, 0, 0, 0.1;
 
   //create sigma point matrix
   MatrixXd Xsig = MatrixXd(n_x, 2 * n_x + 1);
