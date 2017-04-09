@@ -54,10 +54,10 @@ UKF::UKF() {
   */
   // state dimention
   n_x_ = 5;
-
   // Augumented state dimention
-
   n_aug_ = 7;
+  // Sigma point spreading parameter
+  lambda_ = ;
 
 
 
