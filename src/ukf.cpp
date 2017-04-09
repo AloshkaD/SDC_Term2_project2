@@ -59,6 +59,7 @@ UKF::UKF() {
   // Sigma point spreading parameter
   lambda_ = 3 - n_aug;
 
+
   is_initialized_ = false;
   previous_timestamp_ = 0;
  
@@ -80,18 +81,25 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   measurements.
   */
   if (!is_initialized_)
-
-  ukf_.x_ = VectorXd(4);
+  float v=0.1 // estimate velocity for now
+  ukf.x_ = VectorXd(4);
   previous_timestamp_ = meas_package.timestamp_;
-  ukf_.x_ = 1,1,1,1,1;
-  
+  ukf.x_ = 1,1,1,1,1; //pos1, pos2, vel_abs, yaw_angle, yaw_rate
+  /*
+    x << 5.7441,
+         1.3800,
+         2.2049,
+         0.5015,
+         0.3528;
+  */
+
   if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
       float theta = meas_package.raw_measurements_[1];
-      float px = measurement_pack.raw_measurements_[0]*cos(theta);
-      float py = measurement_pack.raw_measurements_[0]*sin(theta);
+      float px = meas_package.raw_measurements_[0]*cos(theta);
+      float py = meas_package.raw_measurements_[0]*sin(theta);
       if(fabs(px) < 0.00001 or fabs(py) < 0.00001){
         //cout<< "px or py is 0"<<"\n";
         //px = 0.00001;
@@ -99,6 +107,30 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       return;
     
   }
+      float ro_dot = meas_package.raw_measurements_(2);
+      float phi = meas_package.raw_measurements_(1);
+      ukf.x_ << px, py,v, ro_dot * cos(phi), ro_dot * sin(phi);
+
+      //ekf_.x_ << px, py, 0, 0;
+}
+
+ else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+      /**
+      Initialize state with 0,0,0,0 value
+      */
+      float px_laser = meas_package.raw_measurements_[0];
+      float py_laser = meas_package.raw_measurements_[1];
+
+      if(fabs(px_laser) < 0.00001 or fabs(py_laser) < 0.00001){
+        //cout<< "px_laser or py_laser is 0"<<"\n";
+        //px_laser = 0.00001;
+        //py_laser = 0.00001;
+        return;
+      }
+            ukf.x_ << px_laser, py_laser,0, 0, 0;
+      }
+    is_initialized_ = true;
+    return;
 }
 
 /**
