@@ -189,7 +189,7 @@ void UKF::Prediction(double delta_t) {
   MatrixXd Xsig_aug = MatrixXd(n_aug, 2 * n_aug + 1);
  
  //create augmented mean state
-  x_aug.head(5) = x;
+  x_aug.head(5) = x_;
   
   x_aug(5) = 0;
    
@@ -198,7 +198,7 @@ void UKF::Prediction(double delta_t) {
 
   //create augmented covariance matrix
   P_aug.fill(0.0);
-  P_aug.topLeftCorner(5,5) = P;
+  P_aug.topLeftCorner(5,5) = P_;
   P_aug(5,5) = std_a*std_a;
   P_aug(6,6) = std_yawdd*std_yawdd;
  
@@ -259,6 +259,38 @@ void UKF::Prediction(double delta_t) {
     Xsig_pred(3,i) = yaw_p;
     Xsig_pred(4,i) = yawd_p;
   }
+  //create vector for weights
+  VectorXd weights = VectorXd(2*n_aug+1);
+  // set weights
+  double weight_0 = lambda/(lambda+n_aug);
+  weights(0) = weight_0;
+  for (int i=1; i<2*n_aug+1; i++) {  //2n+1 weights
+    double weight = 0.5/(n_aug+lambda);
+    weights(i) = weight;
+  }
+
+  //predicted state mean
+  x_.fill(0.0);
+  for (int i = 0; i < 2 * n_aug + 1; i++) {  //iterate over sigma points
+    x_ = x_+ weights(i) * Xsig_pred.col(i);
+  }
+
+  //predicted state covariance matrix
+  P_.fill(0.0);
+  for (int i = 0; i < 2 * n_aug + 1; i++) {  //iterate over sigma points
+
+    // state difference
+    VectorXd x_diff = Xsig_pred.col(i) - x_;
+    //angle normalization
+    while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
+    while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
+
+    P_ = P_ + weights(i) * x_diff * x_diff.transpose() ;
+  }
+
+return;
+
+
 }
 
 /**
