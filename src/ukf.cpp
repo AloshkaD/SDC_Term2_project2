@@ -215,7 +215,7 @@ void UKF::Prediction(double delta_t) {
   }
   //create matrix with predicted sigma points as columns
   MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
-  
+  //double delta_t = 0.1; //time diff in sec
 }
 
 /**
