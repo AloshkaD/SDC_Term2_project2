@@ -203,7 +203,17 @@ void UKF::Prediction(double delta_t) {
   P_aug(6,6) = std_yawdd*std_yawdd;
  
  
- 
+   //create square root matrix
+  MatrixXd L = P_aug.llt().matrixL();
+
+  //create augmented sigma points
+  Xsig_aug.col(0)  = x_aug;
+  for (int i = 0; i< n_aug; i++)
+  {
+    Xsig_aug.col(i+1)       = x_aug + sqrt(lambda+n_aug) * L.col(i);
+    Xsig_aug.col(i+1+n_aug) = x_aug - sqrt(lambda+n_aug) * L.col(i);
+  }
+  
   
 }
 
