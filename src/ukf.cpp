@@ -111,12 +111,12 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       float phi = meas_package.raw_measurements_(1);
       ukf.x_ << px, py,v, ro_dot * cos(phi), ro_dot * sin(phi);
 
-      //ekf_.x_ << px, py, 0, 0;
+      //ekf_.x_ << px, py, 0, 0,0;
 }
 
  else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
       /**
-      Initialize state with 0,0,0,0 value
+      Initialize state with 0,0,0,0,0 value
       */
       float px_laser = meas_package.raw_measurements_[0];
       float py_laser = meas_package.raw_measurements_[1];
@@ -145,6 +145,31 @@ void UKF::Prediction(double delta_t) {
   Complete this function! Estimate the object's location. Modify the state
   vector, x_. Predict sigma points, the state, and the state covariance matrix.
   */
+  //set example covariance matrix
+  MatrixXd P = MatrixXd(n_x, n_x);
+  P << 0.0043,   -0.0013,    0.0030,   -0.0022,   -0.0020,
+      -0.0013,    0.0077,    0.0011,    0.0071,    0.0060,
+       0.0030,    0.0011,    0.0054,    0.0007,    0.0008,
+      -0.0022,    0.0071,    0.0007,    0.0098,    0.0100,
+      -0.0020,    0.0060,    0.0008,    0.0100,    0.0123;
+
+  //create sigma point matrix
+  MatrixXd Xsig = MatrixXd(n_x, 2 * n_x + 1);
+
+  //calculate square root of P
+  MatrixXd A = P.llt().matrixL();
+
+  //set first column of sigma point matrix
+  Xsig.col(0)  = ukf.x_;
+
+  //set remaining sigma points
+  for (int i = 0; i < n_x; i++)
+  {
+    Xsig.col(i+1)     = x + sqrt(lambda+n_x) * A.col(i);
+    Xsig.col(i+1+n_x) = x - sqrt(lambda+n_x) * A.col(i);
+  }
+
+
 }
 
 /**
