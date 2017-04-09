@@ -170,7 +170,7 @@ void UKF::Prediction(double delta_t) {
   MatrixXd A = P_.llt().matrixL();
 
   //set first column of sigma point matrix
-  Xsig.col(0)  = ukf.x_;
+  Xsig.col(0)  = x_;
 
   //set remaining sigma points
   for (int i = 0; i < n_x; i++)
@@ -179,6 +179,12 @@ void UKF::Prediction(double delta_t) {
     Xsig.col(i+1+n_x) = x - sqrt(lambda+n_x) * A.col(i);
   }
 
+ 
+ 
+ 
+ 
+ 
+ 
  //*Xsig_out = Xsig;
 }
 
