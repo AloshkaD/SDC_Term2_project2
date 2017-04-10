@@ -84,7 +84,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   if (!is_initialized_){
   //float v=0.1 // estimate velocity for now
   
-  x_ = 0.1, 0.1, 0.1, 0.1, 0.1; //pos1, pos2, vel_abs, yaw_angle, yaw_rate
+  x_ << 0.1, 0.1, 0.1, 0.1, 0.1; //pos1, pos2, vel_abs, yaw_angle, yaw_rate
   /*
     x << 5.7441,
          1.3800,
