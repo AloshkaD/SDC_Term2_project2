@@ -7,7 +7,7 @@ Accuracy - RMSE:
 0.459976
 
 ---
-<iframe width="900" height="800" frameborder="0" scrolling="no" src="https://plot.ly/~AloshkaD/1.embed"></iframe>
+ 
 
 Accuracy using file 2:
 Accuracy - RMSE:
@@ -16,7 +16,9 @@ Accuracy - RMSE:
 0.51473
 0.436658
 
-<iframe width="900" height="800" frameborder="0" scrolling="no" src="https://plot.ly/~AloshkaD/3.embed"></iframe>
+![Alt text](plot1.png?raw=true "Plot1")
+
+![Alt text](plot2.png?raw=true "Plot2")
 
 ## Dependencies
 
