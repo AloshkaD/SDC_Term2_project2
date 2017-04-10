@@ -176,8 +176,8 @@ void UKF::Prediction(double delta_t) {
   //set remaining sigma points
   for (int i = 0; i < n_x_; i++)
   {
-    Xsig.col(i+1)     = x + sqrt(lambda+n_x_) * A.col(i);
-    Xsig.col(i+1+n_x_) = x - sqrt(lambda+n_x_) * A.col(i);
+    Xsig.col(i+1)     = x_ + sqrt(lambda_+n_x_) * A.col(i);
+    Xsig.col(i+1+n_x_) = x_ - sqrt(lambda_+n_x_) * A.col(i);
   }
 
    //create augmented mean vector
@@ -211,8 +211,8 @@ void UKF::Prediction(double delta_t) {
   Xsig_aug.col(0)  = x_aug;
   for (int i = 0; i< n_aug; i++)
   {
-    Xsig_aug.col(i+1)       = x_aug + sqrt(lambda+n_aug) * L.col(i);
-    Xsig_aug.col(i+1+n_aug) = x_aug - sqrt(lambda+n_aug) * L.col(i);
+    Xsig_aug.col(i+1)       = x_aug + sqrt(lambda_+n_aug) * L.col(i);
+    Xsig_aug.col(i+1+n_aug) = x_aug - sqrt(lambda_+n_aug) * L.col(i);
   }
   //create matrix with predicted sigma points as columns
   MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug + 1);
@@ -263,10 +263,10 @@ void UKF::Prediction(double delta_t) {
   //create vector for weights
   VectorXd weights = VectorXd(2*n_aug+1);
   // set weights
-  double weight_0 = lambda/(lambda+n_aug);
+  double weight_0 = lambda_/(lambda_+n_aug);
   weights(0) = weight_0;
   for (int i=1; i<2*n_aug+1; i++) {  //2n+1 weights
-    double weight = 0.5/(n_aug+lambda);
+    double weight = 0.5/(n_aug+lambda_);
     weights(i) = weight;
   }
 
