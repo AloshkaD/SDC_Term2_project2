@@ -109,7 +109,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   }
       float ro_dot = meas_package.raw_measurements_(2);
       float phi = meas_package.raw_measurements_(1);
-      x_ << px, py,v, ro_dot * cos(phi), ro_dot * sin(phi),0;
+      x_ << px, py,ro_dot * cos(phi), ro_dot * sin(phi),0;
 
       //ekf_.x_ << px, py, 0, 0,0;
 }
@@ -165,7 +165,7 @@ void UKF::Prediction(double delta_t) {
         0, 0, 0, 0, 0.1;
 
   //create sigma point matrix
-  MatrixXd Xsig = MatrixXd(n_x, 2 * n_x + 1);
+  MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
 
   //calculate square root of P
   MatrixXd A = P_.llt().matrixL();
@@ -174,10 +174,10 @@ void UKF::Prediction(double delta_t) {
   Xsig.col(0)  = x_;
 
   //set remaining sigma points
-  for (int i = 0; i < n_x; i++)
+  for (int i = 0; i < n_x_; i++)
   {
-    Xsig.col(i+1)     = x + sqrt(lambda+n_x) * A.col(i);
-    Xsig.col(i+1+n_x) = x - sqrt(lambda+n_x) * A.col(i);
+    Xsig.col(i+1)     = x + sqrt(lambda+n_x_) * A.col(i);
+    Xsig.col(i+1+n_x_) = x - sqrt(lambda+n_x_) * A.col(i);
   }
 
    //create augmented mean vector
@@ -215,7 +215,7 @@ void UKF::Prediction(double delta_t) {
     Xsig_aug.col(i+1+n_aug) = x_aug - sqrt(lambda+n_aug) * L.col(i);
   }
   //create matrix with predicted sigma points as columns
-  MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
+  MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug + 1);
   //double delta_t = 0.1; //time diff in sec
   //predict sigma points
   for (int i = 0; i< 2*n_aug+1; i++)
@@ -324,7 +324,7 @@ double UKF::Update(MeasurementPackage meas_package, int n_z, MatrixXd Zsig, Matr
   S = S + R;
 
   //create matrix for cross correlation Tc
-  MatrixXd Tc = MatrixXd(n_x, n_z);
+  MatrixXd Tc = MatrixXd(n_x_, n_z);
 //calculate cross correlation matrix
   Tc.fill(0.0);
   for (int i = 0; i < 2 * n_aug + 1; i++) {  //2n+1 simga points
