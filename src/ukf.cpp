@@ -201,7 +201,7 @@ void UKF::Prediction(double delta_t) {
   P_aug.fill(0.0);
   P_aug.topLeftCorner(5,5) = P_;
   P_aug(5,5) = std_a_*std_a_;
-  P_aug(6,6) = std_yawdd*std_yawdd;
+  P_aug(6,6) = std_yawdd_*std_yawdd_;
  
  
    //create square root matrix
@@ -312,6 +312,8 @@ double UKF::Update(MeasurementPackage meas_package, int n_z, MatrixXd Zsig, Matr
     //angle normalization
     while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
     while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
+
+    
 
     S = S + weights(i) * z_diff * z_diff.transpose();
   }
@@ -428,9 +430,9 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
   //add measurement noise covariance matrix
   MatrixXd R = MatrixXd(n_z,n_z);
-  R <<    std_radr*std_radr, 0, 0,
+  R <<    std_radr_*std_radr_, 0, 0,
           0, std_radphi*std_radphi, 0,
-          0, 0,std_radrd*std_radrd;
+          0, 0,std_radrd_*std_radrd_;
      VectorXd z = VectorXd(n_z);
   z << meas_package.raw_measurements_(0),
        meas_package.raw_measurements_(1),
