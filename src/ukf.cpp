@@ -254,8 +254,7 @@ void UKF::Prediction(double delta_t) {
     Xsig_pred(3,i) = yaw_p;
     Xsig_pred(4,i) = yawd_p;
   }
-  Xsig_pred_ = Xsig_pred;
-
+  
   weights_ = VectorXd(2 *  n_aug_ + 1);
   weights_.fill(0.0);
 
@@ -263,17 +262,17 @@ void UKF::Prediction(double delta_t) {
   for (int i = 1; i < 2 * n_aug_ + 1; i++) {
     weights_(i) = 0.5 / (n_aug_ + lambda_);
   }
-
+  Xsig_pred_ = Xsig_pred;
   x_.fill(0.0);
   for (int i = 0; i<2*n_aug_+1; i++)
   {
-      x_ = x_+weights_(i)*Xsig_pred_.col(i);
+      x_ = x_+weights_(i)*Xsig_pred.col(i);
   }
 
   P_.fill(0.0);
   for (int i = 0; i<2*n_aug_+1; i++)
   {
-      VectorXd x_pred_minus_x = Xsig_pred_.col(i) - x_;
+      VectorXd x_pred_minus_x = Xsig_pred.col(i) - x_;
       while (x_pred_minus_x(3)> M_PI) x_pred_minus_x(3)-=2.*M_PI;
       while (x_pred_minus_x(3)<-M_PI) x_pred_minus_x(3)+=2.*M_PI;
       P_ = P_ + weights_(i) * x_pred_minus_x * x_pred_minus_x.transpose();
