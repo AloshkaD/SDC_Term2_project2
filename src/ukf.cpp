@@ -91,11 +91,11 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
          0.5015,
          0.3528;
   */
-    P_ << 0.1, 0, 0, 0, 0,
-          0, 0.1, 0, 0, 0,
-          0, 0, 0.1, 0, 0,
-          0, 0, 0, 0.1, 0,
-          0, 0, 0, 0, 0.1;
+    P_ << 0.01, 0, 0, 0, 0,
+          0, 0.01, 0, 0, 0,
+          0, 0, 0.01, 0, 0,
+          0, 0, 0, 0.01, 0,
+          0, 0, 0, 0, 0.01;
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
