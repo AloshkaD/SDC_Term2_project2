@@ -370,7 +370,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
   You'll also need to calculate the lidar NIS.
   */
-  if (x_(0) == 0) return;
+   
   int n_z =2;
   MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {
@@ -406,7 +406,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   You'll also need to calculate the radar NIS.
   */
   //create matrix for sigma points in measurement space
-  if (x_(0) == 0) return;
+  
   int n_z =3;
   MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
 
