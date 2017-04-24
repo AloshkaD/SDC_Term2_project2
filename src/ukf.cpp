@@ -176,6 +176,7 @@ void UKF::Prediction(double delta_t) {
   {
     Xsig.col(i+1)     = x_ + sqrt(lambda_+n_x_) * A.col(i);
     Xsig.col(i+1+n_x_) = x_ - sqrt(lambda_+n_x_) * A.col(i);
+  
   }
 
    //create augmented mean vector
