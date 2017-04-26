@@ -158,7 +158,7 @@ void UKF::Prediction(double delta_t) {
  
 
   //create sigma point matrix
-  MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
+  //MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
 
   //calculate square root of P
   MatrixXd A = P_.llt().matrixL();
